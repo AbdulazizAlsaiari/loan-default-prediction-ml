@@ -54,7 +54,9 @@ loan-default-prediction-ml/
 ├── src/
 │   ├── explore_data.py           # full EDA + model comparison (exploratory)
 │   ├── train.py                  # clean training script → produces final model
-│   └── app.py                    # Flask API serving the trained model
+│   ├── app.py                    # Flask API serving the trained model
+│   └── templates/
+│       └── index.html            # simple web form for manual testing
 ├── Dockerfile
 ├── .dockerignore
 ├── requirements.txt
@@ -96,9 +98,15 @@ python src/train.py
 python src/app.py
 ```
 
-## API Usage
+**Note:** Whichever option you use, the server (either the terminal running `python src/app.py`, or the Docker container) must stay running for the API and web form to be reachable — this is a local-only service, not a hosted one.
 
-### `POST /predict`
+## Ways to Use the API
+
+### 1. Web Form (easiest — no tools required)
+
+Open `http://127.0.0.1:5000/form` in a browser. Fill in the applicant's details and click **"Check Loan Default Risk"** to get an instant prediction directly on the page.
+
+### 2. `POST /predict` (for programmatic access, e.g. Postman)
 
 Send applicant data as JSON to receive a default prediction.
 
@@ -140,7 +148,7 @@ Send applicant data as JSON to receive a default prediction.
 4. **Feature Scaling** — `StandardScaler` fit on training data only (to avoid data leakage), applied to both train and test sets
 5. **Model Training & Comparison** — trained and evaluated 5 models, prioritizing recall on the minority (default) class
 6. **Model Persistence** — saved the final model, scaler, and feature column order with `joblib`
-7. **API Development** — built a Flask REST API that replicates the exact preprocessing pipeline on new input before prediction
+7. **API Development** — built a Flask REST API that replicates the exact preprocessing pipeline on new input before prediction, plus a simple web form for manual testing
 8. **Containerization** — packaged the API into a Docker image for consistent, portable local deployment
 
 ## Notes
