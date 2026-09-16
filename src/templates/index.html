@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>Loan Default Prediction</title>
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: #f4f6f8;
+        margin: 0;
+        padding: 40px 20px;
+        color: #222;
+    }
+
+    .container {
+        max-width: 700px;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 30px 40px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #2c3e50;
+    }
+
+    form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px 24px;
+    }
+
+    .field {
+        display: flex;
+        flex-direction: column;
+    }
+
+    label {
+        margin-bottom: 6px;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    input, select {
+        padding: 8px 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    input:focus, select:focus {
+        outline: none;
+        border-color: #3498db;
+    }
+
+    .submit-row {
+        grid-column: 1 / -1;
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    button {
+        background-color: #3498db;
+        color: #fff;
+        border: none;
+        padding: 12px 30px;
+        font-size: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #2980b9;
+    }
+
+    #result {
+        margin-top: 25px;
+        padding: 18px;
+        border-radius: 6px;
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+        display: none;
+    }
+
+    #result.no-default {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+        display: block;
+    }
+
+    #result.default {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+        display: block;
+    }
+
+    #result.error {
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeeba;
+        display: block;
+    }
+
+    #result p {
+        margin: 4px 0;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>Loan Default Risk Checker</h1>
+
+    <form id="predict-form">
+        <div class="field">
+            <label for="Age">Age</label>
+            <input type="number" step="any" id="Age" name="Age" required>
+        </div>
+
+        <div class="field">
+            <label for="Income">Income</label>
+            <input type="number" step="any" id="Income" name="Income" required>
+        </div>
+
+        <div class="field">
+            <label for="LoanAmount">LoanAmount</label>
+            <input type="number" step="any" id="LoanAmount" name="LoanAmount" required>
+        </div>
+
+        <div class="field">
+            <label for="CreditScore">CreditScore</label>
+            <input type="number" step="any" id="CreditScore" name="CreditScore" required>
+        </div>
+
+        <div class="field">
+            <label for="MonthsEmployed">MonthsEmployed</label>
+            <input type="number" step="any" id="MonthsEmployed" name="MonthsEmployed" required>
+        </div>
+
+        <div class="field">
+            <label for="NumCreditLines">NumCreditLines</label>
+            <input type="number" step="any" id="NumCreditLines" name="NumCreditLines" required>
+        </div>
+
+        <div class="field">
+            <label for="InterestRate">InterestRate</label>
+            <input type="number" step="any" id="InterestRate" name="InterestRate" required>
+        </div>
+
+        <div class="field">
+            <label for="LoanTerm">LoanTerm</label>
+            <input type="number" step="any" id="LoanTerm" name="LoanTerm" required>
+        </div>
+
+        <div class="field">
+            <label for="DTIRatio">DTIRatio</label>
+            <input type="number" step="any" min="0" max="1" id="DTIRatio" name="DTIRatio" required>
+        </div>
+
+        <div class="field">
+            <label for="Education">Education</label>
+            <select id="Education" name="Education">
+                <option value="Bachelor's">Bachelor's</option>
+                <option value="Master's">Master's</option>
+                <option value="High School">High School</option>
+                <option value="PhD">PhD</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label for="EmploymentType">EmploymentType</label>
+            <select id="EmploymentType" name="EmploymentType">
+                <option value="Full-time">Full-time</option>
+                <option value="Unemployed">Unemployed</option>
+                <option value="Self-employed">Self-employed</option>
+                <option value="Part-time">Part-time</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label for="MaritalStatus">MaritalStatus</label>
+            <select id="MaritalStatus" name="MaritalStatus">
+                <option value="Divorced">Divorced</option>
+                <option value="Married">Married</option>
+                <option value="Single">Single</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label for="HasMortgage">HasMortgage</label>
+            <select id="HasMortgage" name="HasMortgage">
+                <option value="0">0</option>
+                <option value="1">1</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label for="HasDependents">HasDependents</label>
+            <select id="HasDependents" name="HasDependents">
+                <option value="0">0</option>
+                <option value="1">1</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label for="LoanPurpose">LoanPurpose</label>
+            <select id="LoanPurpose" name="LoanPurpose">
+                <option value="Other">Other</option>
+                <option value="Auto">Auto</option>
+                <option value="Business">Business</option>
+                <option value="Home">Home</option>
+                <option value="Education">Education</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label for="HasCoSigner">HasCoSigner</label>
+            <select id="HasCoSigner" name="HasCoSigner">
+                <option value="0">0</option>
+                <option value="1">1</option>
+            </select>
+        </div>
+
+        <div class="submit-row">
+            <button type="submit">Check Loan Default Risk</button>
+        </div>
+    </form>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    const form = document.getElementById('predict-form');
+    const resultBox = document.getElementById('result');
+
+    const numericFields = ['Age', 'Income', 'LoanAmount', 'CreditScore', 'MonthsEmployed',
+        'NumCreditLines', 'InterestRate', 'LoanTerm', 'DTIRatio'];
+
+    form.addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        const formData = new FormData(form);
+        const payload = {};
+
+        formData.forEach((value, key) => {
+            if (numericFields.includes(key)) {
+                payload[key] = parseFloat(value);
+            } else {
+                payload[key] = value;
+            }
+        });
+
+        resultBox.className = '';
+
+        try {
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Request failed');
+            }
+
+            const isDefault = data.prediction === 'Default';
+            resultBox.className = isDefault ? 'default' : 'no-default';
+            resultBox.innerHTML =
+                '<p>Prediction: ' + data.prediction + '</p>' +
+                '<p>Probability of Default: ' + (data.probability * 100).toFixed(2) + '%</p>';
+        } catch (err) {
+            resultBox.className = 'error';
+            resultBox.innerHTML = '<p>Error: ' + err.message + '</p>';
+        }
+    });
+</script>
+</body>
+</html>

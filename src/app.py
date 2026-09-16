@@ -1,5 +1,5 @@
-# نستورد Flask ودالة jsonify (تحول قاموس بايثون لصيغة JSON قبل الإرسال)
-from flask import Flask, jsonify
+# نستورد Flask ودالة jsonify (تحول قاموس بايثون لصيغة JSON قبل الإرسال) و render_template لعرض صفحات HTML
+from flask import Flask, jsonify, render_template
 
 # ننشئ "تطبيق" Flask، وهو أساس أي API نبنيه
 app = Flask(__name__)
@@ -64,6 +64,12 @@ def predict():
     }
     
     return jsonify(result)
+
+
+# عنوان جديد '/form' لعرض واجهة ويب بسيطة (نموذج HTML) للتنبؤ عن طريق المتصفح
+@app.route('/form', methods=['GET'])
+def form():
+    return render_template('index.html')
 
 
 # نشغّل الخادم، فقط لو شغّلنا هذا الملف مباشرة (مو لو تم استيراده من ملف ثاني)
